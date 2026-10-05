@@ -57,4 +57,6 @@ https://74.82.196.10:8000/register?aff=v17mHNYv
 
 ## License
 
-MIT
+MIT License © 2026 dujeongil-galaxy
+
+仅供消费与购车参考，数据为公开资料整理，请理性看待。
