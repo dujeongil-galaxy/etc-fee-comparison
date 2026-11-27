@@ -87,7 +87,7 @@ code{background:var(--panel-2); padding:.1em .4em; border-radius:5px; font-size:
 /* tables */
 .tbl-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0 6px}
 table{border-collapse:collapse; width:100%; min-width:520px; font-size:.9rem}
-th,td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top}
+th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top; word-break:break-word; overflow-wrap:anywhere}
 th{background:var(--panel-2); font-weight:600; white-space:nowrap}
 td.num{white-space:nowrap}
 .scroll-hint{color:var(--faint); font-size:.8rem; margin:0 0 14px}
@@ -267,7 +267,7 @@ footer p{margin:.3em 0}
         <div class="row" data-dim="noa">
           <div class="k">城市 NOA</div>
           <div class="v"><span class="tag t-sub">380 元/月</span> 纯订阅，不提供买断</div>
-          <p class="note">NOP+ 高速与城区不拆开单收；更高阶 NAD 规划 680 元/月、尚未落地。2026 年新购车首任车主赠 5 年，但权益绑个人账户、不过户即失效，二手接手当天起 380 元/月。</p>
+          <p class="note">NOP+ 高速与城区不拆开单收；更高阶 NAD 规划 680 元/月、尚未落地。2026 年新购车首任车主赠 5 年，但按中国证券报一线调研，蔚来销售口径是权益与账号绑定、随账号走：卖车不随车，二手买家不继承免费额度，接手即按 380 元/月订阅（销售走访口径，非官方条款原文，以蔚来 App 权益页与客服答复为准）。</p>
         </div>
         <div class="row" data-dim="extra">
           <div class="k">其他附加费用</div>
@@ -348,6 +348,25 @@ footer p{margin:.3em 0}
   </div>
   <p class="scroll-hint">表格可左右滑动查看。</p>
 
+  <h2 id="own">买断的钱能不能带进下一辆车：跟车 vs 跟人</h2>
+  <p>收钱方式之外还有第二个维度，决定你花的钱在卖车时还算不算数。<a href="https://epaper.cs.com.cn/zgzqb/html/2026-11/06/nw.D110000zgzqb_20261106_4-A06.htm" target="_blank" rel="noopener">中国证券报 2026 年 11 月 6 日的一线调研</a>把权益归属分成两类：<strong>跟车</strong>＝权益写进车辆 VIN，过户后下家继续用；<strong>跟人</strong>＝权益挂在账号上，车卖了功能还归原车主。</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>品牌</th><th>收费方式</th><th>权益归属</th><th>二手买家要付什么</th><th>口径来源</th></tr></thead>
+      <tbody>
+        <tr><td>问界 / 鸿蒙智行 ADS 买断</td><td>买断 3.2～3.6 万</td><td><strong>跟车</strong>（写进 VIN）</td><td>0，下家直接接着用</td><td>车主口述，非官方条款</td></tr>
+        <tr><td>小米 HAD（价值 2.6 万，首销赠送）</td><td>赠送</td><td><strong>跟车</strong></td><td>0</td><td>媒体口径</td></tr>
+        <tr><td>理想 AD Max</td><td>免费承诺</td><td><strong>跟车</strong>（2023 年公开承诺，二手买家可继续用）</td><td>0</td><td>官方公开承诺</td></tr>
+        <tr><td>蔚来 NOP+</td><td>订阅 380 元/月</td><td><strong>跟人</strong>（与账号绑定、随账号走）</td><td>380 元/月起，不继承免费额度</td><td>销售走访确认 + 9 月财报电话会口径</td></tr>
+        <tr><td>极氪 001、智己、魏牌蓝山等「终身免费」</td><td>赠送</td><td>跟车，但限购车条件与下定批次，过期不补</td><td>视批次而定</td><td>媒体口径</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="scroll-hint">表格可左右滑动查看。</p>
+  <div class="callout warn">
+    <p><strong>「3.2 万的智驾包，卖车只值 5000」的由来</strong>：中国证券报走访发现，同款同车况的两台车，带不带买断权益，车商报价差 5000～2 万。买断且跟车的那部分能折回残值，跟人的那部分等于白花。行业至今没有统一的权益折算和退订标准，所以付款前只能自己问、并落到合同或权益凭证上。该分类来自记者走访销售与车主转述，<strong>不是官方条款原文</strong>，各家网上说法互相矛盾——落地办法只有一条：打官方客服报 VIN 问「过户给我之后权益是否保留、要不要重新付费」，并录音。</p>
+  </div>
+
   <div class="callout">
     <p><strong>比亚迪的分层逻辑</strong>：天神之眼 A（DiPilot 600，三激光雷达 + 双 Orin-X）主要装在仰望旗舰；B（DiPilot 300，激光版）是普通家用车解锁城市 NOA 的最低硬件门槛；C（DiPilot 100，纯视觉三目）装在海鸥、秦 L、宋 PLUS、海豹 06 等走量车型上，出厂即支持高速 NOA 和自动泊车，但硬件本身不支持全域城市 NOA，等 OTA 也等不来。</p>
   </div>
@@ -392,14 +411,15 @@ footer p{margin:.3em 0}
     <li>补贴有没有窗口期？（例：捷途的 6000 元高阶包权益仅限提车 30 天内）</li>
     <li>座椅加热 / 通风 / 按摩 / 方向盘加热，是标配还是付费解锁？能不能 OTA 后装？</li>
     <li>还有哪些按年按月收的？服务包、流量、云服务、BaaS、换电权益。</li>
-    <li>过户后权益还在不在？蔚来的 NOP+ 权益绑账号不随车过户，这就是二手接手的真实成本。</li>
+    <li>过户后权益还在不在？<strong>这笔权益是写进 VIN 还是挂在我账号上</strong>？写进 VIN 的才能转给下家，挂账号的卖车就归原车主了——蔚来的 NOP+ 就是后者，二手接手当天起 380 元/月。</li>
   </ol>
 
   <h2 id="src">数据来源</h2>
   <ul class="srcs">
     <li>华为引望《华为乾崑智驾 ADS 高阶功能包价格及用户权益更新公告》（2026-06-22）口径，见<a href="https://post.smzdm.com/p/a9545q2o/" target="_blank" rel="noopener">什么值得买：买华为乾崑智驾版要加钱吗</a>、<a href="https://www.toutiao.com/article/7712651749307253248/" target="_blank" rel="noopener">今日头条：阿维塔 06T 的智驾账</a></li>
     <li>小鹏科技日（2026-11-25）宣布图灵 AI 智驾 2027 年第二季度起订阅，见<a href="https://post.smzdm.com/p/anv5z3p7/" target="_blank" rel="noopener">什么值得买：小鹏智驾 2027 年起订阅收费</a>、<a href="https://news.qq.com/rain/a/20261126A0GY9A00" target="_blank" rel="noopener">腾讯新闻：收费 or 免费，谁才是智驾未来大势</a></li>
-    <li>蔚来 NOP+ 380 元/月、首任车主 5 年免费、权益不随车过户，见<a href="https://post.smzdm.com/p/awwd5m8k/" target="_blank" rel="noopener">什么值得买：全行业送智驾，蔚来偏要按月收费</a></li>
+    <li>权益归属与二手残值，见<a href="https://epaper.cs.com.cn/zgzqb/html/2026-11/06/nw.D110000zgzqb_20261106_4-A06.htm" target="_blank" rel="noopener">中国证券报：一线调研·智驾买断费用随车折价</a>（记者走访销售与车主转述，非官方条款原文）</li>
+    <li>蔚来 NOP+ 380 元/月、首任车主 5 年免费、二手用户按月付费，见<a href="https://post.smzdm.com/p/awwd5m8k/" target="_blank" rel="noopener">什么值得买：全行业送智驾，蔚来偏要按月收费</a></li>
     <li>特斯拉中国大陆 6.4 万元买断、订阅未上线，见<a href="https://www.21jingji.com/article/20260522/herald/9f1635c36514a9499f9dd1d8485090ec.html" target="_blank" rel="noopener">21 经济网</a>、<a href="https://www.dongchedi.com/article/7475365508335682074" target="_blank" rel="noopener">懂车帝</a></li>
     <li>比亚迪天神之眼 B 选装价 9900 → 12000 元（2026-05-01 生效）、迪迪虾赠 1 年，见<a href="https://www.sina.cn/gc/article/niyfqtc2688454.html" target="_blank" rel="noopener">新浪新闻：海狮 06 DM-i 选装天神之眼 B 要 1.2 万</a>、<a href="https://static.nfnews.com/content/202604/29/c12384008.html" target="_blank" rel="noopener">南方+</a></li>
     <li>极氪 001 冬季温度包 2400 元与 ZAD 一次性开通价，见<a href="https://www.pcauto.com.cn/jxwd/5170/51703757.html" target="_blank" rel="noopener">太平洋汽车</a>、<a href="https://www.dongchedi.com/article/7590036820676166169" target="_blank" rel="noopener">懂车帝：001 WE 版老车主免费体验</a></li>
