@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>买车前算清这笔账 · 各车企 ETC / 城市 NOA / 附加费用对比</title>
+<meta name="description" content="同一套城市领航、同一根座椅加热丝，在不同品牌手里的价差能到 10 倍。对比小米、问界、特斯拉、极氪、比亚迪、理想、蔚来、小鹏、零跑的内置 ETC 开通费、城市 NOA 收费形式（买断还是订阅）与其他附加费用。">
+<meta name="theme-color" content="#0f1115">
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --panel-2:#f0f2f5; --line:#e3e6ea;
+  --text:#1b1f26; --muted:#5d6572; --faint:#6f7784;
+  --green:#1f8a4c; --green-bg:#e6f4ec; --blue:#1f5fbf; --blue-bg:#e8effc;
+  --orange:#b4600c; --orange-bg:#fdf0e2; --red:#c0342b; --red-bg:#fdeceb;
+  --gray:#6b7280; --gray-bg:#eef0f3;
+  --accent:#1f8a4c; --radius:14px; --maxw:1080px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1115; --panel:#171a20; --panel-2:#1e222a; --line:#2a2f38;
+    --text:#e8eaee; --muted:#a3abb8; --faint:#7d8593;
+    --green:#4cc38a; --green-bg:#12301f; --blue:#6fa5ff; --blue-bg:#13203a;
+    --orange:#e2a04a; --orange-bg:#33240f; --red:#f0786d; --red-bg:#3a1a18;
+    --gray:#9aa3b0; --gray-bg:#232830;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:16px; line-height:1.75; letter-spacing:.01em;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 18px}
+a{color:var(--blue); text-decoration:none; border-bottom:1px solid transparent}
+a:hover{border-bottom-color:currentColor}
+h1,h2,h3{line-height:1.35; margin:0 0 .5em}
+h2{font-size:1.35rem; margin-top:2.2em}
+h3{font-size:1.05rem; margin-top:1.6em}
+p{margin:.4em 0 .9em}
+ul{margin:.3em 0 1em; padding-left:1.2em}
+li{margin:.25em 0}
+code{background:var(--panel-2); padding:.1em .4em; border-radius:5px; font-size:.92em}
+
+/* header */
+.hero{padding:44px 0 8px; border-bottom:1px solid var(--line)}
+.kicker{color:var(--accent); font-weight:700; font-size:.82rem; letter-spacing:.14em; margin:0 0 .6em}
+.hero h1{font-size:1.75rem; margin-bottom:.35em}
+.hero .lede{color:var(--muted); max-width:46em; margin-top:0}
+.stats{list-style:none; padding:0; margin:22px 0 0; display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px}
+.stats li{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin:0}
+.stats b{display:block; font-size:1.35rem; letter-spacing:-.01em}
+.stats span{color:var(--faint); font-size:.84rem}
+
+/* filters */
+.filters{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 18px; padding:0; list-style:none}
+.filters li{margin:0}
+.filters button{
+  font:inherit; font-size:.9rem; color:var(--muted); background:var(--panel);
+  border:1px solid var(--line); border-radius:999px; padding:7px 15px; cursor:pointer;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.filters button:hover{border-color:var(--faint); color:var(--text)}
+.filters button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important; animation:none !important; scroll-behavior:auto !important}
+}
+
+/* cards */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; padding-bottom:8px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 8px}
+.card h3{margin:0 0 2px; font-size:1.18rem; font-weight:700; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.card .model{color:var(--muted); font-size:.84rem; font-weight:400}
+.row{border-top:1px solid var(--line); padding:12px 0 10px}
+.row:first-of-type{border-top:none}
+.row .k{display:flex; align-items:center; gap:8px; font-size:.8rem; color:var(--faint); margin-bottom:3px}
+.row .v{font-weight:600}
+.row .note{color:var(--muted); font-size:.9rem; margin:2px 0 0}
+.tag{font-size:.74rem; font-weight:700; padding:2px 8px; border-radius:999px; white-space:nowrap; line-height:1.7}
+.t-free{color:var(--green); background:var(--green-bg)}
+.t-buy{color:var(--blue); background:var(--blue-bg)}
+.t-sub{color:var(--orange); background:var(--orange-bg)}
+.t-high{color:var(--red); background:var(--red-bg)}
+.t-unknown{color:var(--gray); background:var(--gray-bg)}
+.card .foot{color:var(--faint); font-size:.78rem; padding:8px 0 4px; border-top:1px solid var(--line)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0 6px}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.9rem}
+th,td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top}
+th{background:var(--panel-2); font-weight:600; white-space:nowrap}
+td.num{white-space:nowrap}
+.scroll-hint{color:var(--faint); font-size:.8rem; margin:0 0 14px}
+
+/* callout */
+.callout{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:var(--radius); padding:14px 16px; margin:14px 0}
+.callout p:last-child{margin-bottom:0}
+.warn{border-left-color:var(--orange)}
+
+/* lists */
+.qa{list-style:none; padding:0; counter-reset:q}
+.qa li{counter-increment:q; position:relative; padding-left:34px; margin:10px 0}
+.qa li::before{content:counter(q); position:absolute; left:0; top:2px; width:22px; height:22px; border-radius:50%;
+  background:var(--green-bg); color:var(--green); font-size:.78rem; font-weight:700; text-align:center; line-height:22px}
+.srcs{font-size:.88rem; color:var(--muted)}
+.srcs li{margin:.35em 0}
+
+footer{margin-top:46px; padding:22px 0 40px; border-top:1px solid var(--line); color:var(--faint); font-size:.85rem}
+footer p{margin:.3em 0}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">买车前算账</p>
+    <h1>硬件都装好了，为什么还要再掏一次钱？</h1>
+    <p class="lede">内置 ETC、城市 NOA、座椅加热——买车时最容易被跳过的三笔账。硬件出厂已装进车里，软件却要另外付费解锁；同样的东西，不同品牌价差能到 10 倍。</p>
+    <ul class="stats">
+      <li><b>0 – 499 元</b><span>内置 ETC 开通费区间</span></li>
+      <li><b>0.5 – 6.4 万元</b><span>城市 NOA 一次性买断价区间</span></li>
+      <li><b>380 – 720 元/月</b><span>订阅制价格区间</span></li>
+      <li><b>2400 元</b><span>极氪后排座椅加热+方向盘加热包</span></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <ul class="filters" id="filters" role="group" aria-label="按费用类型筛选">
+    <li><button type="button" data-filter="all" aria-pressed="true">全部</button></li>
+    <li><button type="button" data-filter="etc" aria-pressed="false">内置 ETC</button></li>
+    <li><button type="button" data-filter="noa" aria-pressed="false">城市 NOA</button></li>
+    <li><button type="button" data-filter="extra" aria-pressed="false">其他附加费用</button></li>
+  </ul>
+
+  <section aria-label="各品牌费用对比">
+    <div class="grid" id="cards">
+
+      <article class="card">
+        <h3>小米 <span class="model">SU7 / YU7 / 澎程</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-free">免费</span></div>
+          <p class="note">早期车型曾收 50 元，2025 年 11 月起免费激活，已付费用户补发积分。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-free">不收费</span> 整车标配 + OTA 免费推送</div>
+          <p class="note">HAD 曾标价 Pro 增强 1.8 万 / Max 增强 2.6 万，现已随车赠送；澎程全系标配 HAD 终身免费。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">YU7 选装 1000～9000 元</div>
+          <p class="note">真皮座椅 8000、车厘子红 9000、金属漆 7000、冰箱 2000、后排娱乐屏 1000；澎程旋转座椅 1.8 万、豪华套装 3.1 万。</p>
+        </div>
+        <p class="foot">2026 款 SU7 前排座椅通风 / 加热 / 按摩全系标配</p>
+      </article>
+
+      <article class="card">
+        <h3>问界 / 智界 <span class="model">鸿蒙智行</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-sub">499 元</span> 一次性</div>
+          <p class="note">官方配置表脚注：ETC 模块硬件前装预埋，功能软件 license 付费开通。2026-10-31 仍有车主投诉「APP 激活强制收取 499 元」。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-buy">买断 3.6 万</span> <span class="tag t-sub">月卡 720 / 连续包月 499</span></div>
+          <p class="note">ADS Max/Ultra 一次性 36000 元（2026-07-01 由 3.2 万恢复原价），年卡 4999；ADS Pro 1.2 万、SE 5000。车企补贴后终端 6000～1.5 万。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">问界 M7 选装 6000～1 万</div>
+          <p class="note">主驾零重力 1 万、后排娱乐屏套装 8000、电动踏板 6800、外饰色 6000。</p>
+        </div>
+        <p class="foot">ADS 高阶包补贴由车企自定，到手价看门店</p>
+      </article>
+
+      <article class="card">
+        <h3>特斯拉 <span class="model">Model 3 / Y</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-sub">299 元</span> 一次性</div>
+          <p class="note">Model 系列一次性开通，部分车型支持积分抵扣。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-high">买断 6.4 万</span></div>
+          <p class="note">中国大陆：智能辅助驾驶 64000 元、增强版 32000 元，均为一次性买断，订阅未上线。需 HW4 硬件。北美自 2026-02-15 起停售买断，改 99 美元/月。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">轮毂 / 车漆 / 浅灰内饰 8000～1.2 万</div>
+          <p class="note">寒冷套件（后排座椅加热）曾为硬件预装 + OTA 付费解锁，1600 元（无方向盘加热硬件）/ 2400 元（有硬件）。</p>
+        </div>
+        <p class="foot">买断 6.4 万是本表最高价</p>
+      </article>
+
+      <article class="card">
+        <h3>极氪 <span class="model">全系 / 001 / 7X</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-sub">约 129 元</span> 一次性</div>
+          <p class="note">金额随车型与活动略有浮动，以官方 App 实际标价为准。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-free">现不收费</span></div>
+          <p class="note">历史：ZAD 增强 1.6 万、ZAD 完全 3.5 万一次性开通；2025-03-31 后新车主 0 元开通、终身免费，焕新 7X 全系标配城市 NZP。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v"><span class="tag t-sub">冬季温度包 2400 元</span></div>
+          <p class="note">后排座椅加热 + 方向盘加热，付费永久解锁；2025-12-31 至 2026-03-31 给 2023 款及以前 WE 版老车主免费体验 3 个月。另有空气悬架 2 万、智能感应自动门 1.5 万、座椅舒适套装 6000。</p>
+        </div>
+        <p class="foot">同一根加热丝，早买的多花钱，晚买的白捡</p>
+      </article>
+
+      <article class="card">
+        <h3>比亚迪 <span class="model">汉 / 唐 / 海豹等</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-sub">50 元</span> 发行运营服务费</div>
+          <p class="note">另有媒体口径约 199 元，两个口径都存在，以 App 实际标价为准。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-buy">选装 1.2 万</span> <span class="tag t-free">C 版标配（仅高速）</span></div>
+          <p class="note">天神之眼 C（DiPilot 100）出厂标配，支持高速 NOA 与自动泊车，不支持全域城市 NOA。城市 NOA 需选装天神之眼 B 激光版，2026-05-01 起 9900 → 12000 元，一次性买断、无订阅。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">迪迪虾 AI 智能体 赠 1 年</div>
+          <p class="note">到期后需自行付费解锁；第三代唐四驱线控选装包 2 万。</p>
+        </div>
+        <p class="foot">选装只支持新车下定阶段，老车基本无法后加激光雷达</p>
+      </article>
+
+      <article class="card">
+        <h3>理想 <span class="model">L 系列 / i6 / i8</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-sub">50 元</span> 发行运营服务费</div>
+          <p class="note">费用主要交给 ETC 运营服务商。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-free">不收费</span> 城市 NOA 终身免费、无订阅费</div>
+          <p class="note">AD Max 全系标配；2023 年公开承诺相关能力与后续升级不额外收费。历史 AD Max 曾是付费选装，媒体口径约 2.5～3 万，未取到官方价目。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">用车服务包 999～1399 元/年</div>
+          <p class="note">订阅制。L7 选装：后排娱乐屏 1 万 / 车漆 8000 / 21 寸轮毂 1 万，选装基金可抵至 2000 元/项。</p>
+        </div>
+        <p class="foot">目前公开保留「不额外收费」表述的只剩它</p>
+      </article>
+
+      <article class="card">
+        <h3>蔚来 <span class="model">全系</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-unknown">约 60 元（口径存疑）</span></div>
+          <p class="note">媒体整理口径，未见官方标价；也有车主公开表示蔚来未收此费用，购车前请以 App 为准。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-sub">380 元/月</span> 纯订阅，不提供买断</div>
+          <p class="note">NOP+ 高速与城区不拆开单收；更高阶 NAD 规划 680 元/月、尚未落地。2026 年新购车首任车主赠 5 年，但权益绑个人账户、不过户即失效，二手接手当天起 380 元/月。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">BaaS 电池租用 980～1680 元/月</div>
+          <p class="note">75kWh 980 元/月、100kWh 1680 元/月；NOMI 购车预装 4900 / 后期加装 5280；服务无忧 499 / 1399 / 4999 每年。</p>
+        </div>
+        <p class="foot">最像「订阅服务」而不是「卖硬件」的一家</p>
+      </article>
+
+      <article class="card">
+        <h3>小鹏 <span class="model">G9 / X9 / P7+ 等</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-unknown">未查到</span></div>
+          <p class="note">未查到内置开通费口径；官方商城定制无卡式智能 ETC 售价 139 元，属外购件。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-free">现在免费</span> <span class="tag t-sub">2027 年起订阅</span></div>
+          <p class="note">2026-11-25 第八届科技日宣布：图灵 AI 智驾 2027 年第二季度起面向新购车用户开放订阅，价格待 2027 年公布；上线前已下订 / 已交付车主权益终身不变。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">Ultra 智能升级包 2 万</div>
+          <p class="note">3 颗图灵芯片；Ultra SE 为 1.2 万，均为选装。</p>
+        </div>
+        <p class="foot">免费阵营的旗手正式转向收费</p>
+      </article>
+
+      <article class="card">
+        <h3>零跑 <span class="model">B10 / A10 / C 系列</span></h3>
+        <div class="row" data-dim="etc">
+          <div class="k">内置 ETC</div>
+          <div class="v"><span class="tag t-unknown">未收录</span></div>
+          <p class="note">本次未核查。</p>
+        </div>
+        <div class="row" data-dim="noa">
+          <div class="k">城市 NOA</div>
+          <div class="v"><span class="tag t-free">不收费</span></div>
+          <p class="note">激光雷达版车型世界模型智驾终身免费，2027 年第一季度起向 A / B / C / D 全系提供免费 OTA。</p>
+        </div>
+        <div class="row" data-dim="extra">
+          <div class="k">其他附加费用</div>
+          <div class="v">B10 激光雷达智驾版 11.98 万起</div>
+          <p class="note">把激光雷达 + 车位到车位领航带进 10 万元级价格区间。</p>
+        </div>
+        <p class="foot">免费，靠的是全域自研的成本控制</p>
+      </article>
+
+    </div>
+  </section>
+
+  <h2 id="modes">城市 NOA 现在只有三种收法</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>模式</th><th>怎么收</th><th>代表</th><th>买家要问</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>整车标配 / 随车赠送</td>
+          <td>不额外花钱，OTA 免费推送</td>
+          <td>理想 AD Max、小米 HAD、零跑激光雷达版、极氪新车主、比亚迪 C 版（仅高速）、小鹏（2027 年第二季度前）</td>
+          <td>权益跟车走还是跟人走？二手过户还算不算？</td>
+        </tr>
+        <tr>
+          <td>软件一次性买断</td>
+          <td>购车时一次付清，之后免费用</td>
+          <td>华为 ADS Max/Ultra 3.6 万、Pro 1.2 万、SE 5000；特斯拉 6.4 万 / 3.2 万；比亚迪天神之眼 B 1.2 万；小鹏 Ultra 升级包 2 万</td>
+          <td>是官方标价还是补贴后价？补贴窗口期到哪天？</td>
+        </tr>
+        <tr>
+          <td>按月 / 按年订阅</td>
+          <td>持续付费，不订阅即失效</td>
+          <td>华为 ADS Max 年卡 4999 / 月卡 720 / 连续包月 499；蔚来 NOP+ 380 元/月、NAD 680 元/月；特斯拉北美 99 美元/月；理想用车服务包 999～1399 元/年</td>
+          <td>到期后功能是降级还是直接没有？</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="scroll-hint">表格可左右滑动查看。</p>
+
+  <div class="callout">
+    <p><strong>比亚迪的分层逻辑</strong>：天神之眼 A（DiPilot 600，三激光雷达 + 双 Orin-X）主要装在仰望旗舰；B（DiPilot 300，激光版）是普通家用车解锁城市 NOA 的最低硬件门槛；C（DiPilot 100，纯视觉三目）装在海鸥、秦 L、宋 PLUS、海豹 06 等走量车型上，出厂即支持高速 NOA 和自动泊车，但硬件本身不支持全域城市 NOA，等 OTA 也等不来。</p>
+  </div>
+
+  <h2 id="seat">座椅加热：一个越来越贵的「取暖费」</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>品牌</th><th>项目</th><th>金额</th><th>形式</th></tr></thead>
+      <tbody>
+        <tr><td>极氪 001</td><td>冬季温度包（后排座椅加热 + 方向盘加热）</td><td class="num">2400 元</td><td>付费永久解锁；2025-12-31 起给老 WE 版车主免费体验 3 个月</td></tr>
+        <tr><td>特斯拉</td><td>寒冷套件（后排座椅加热）</td><td class="num">1600 / 2400 元</td><td>硬件预装，OTA 付费解锁（有无方向盘加热硬件两档）</td></tr>
+        <tr><td>比亚迪</td><td>迪迪虾 AI 智能体</td><td class="num">选装 B 版赠 1 年</td><td>到期付费解锁</td></tr>
+        <tr><td>smart 精灵 #1</td><td>前排座椅加热 1299 / 方向盘加热 999 / 座椅通风 1999</td><td class="num">永久开通</td><td>2022 年公布时是订阅（99 / 129 / 199 元每月），2023 年因舆论压力改为选装</td></tr>
+        <tr><td>宝马</td><td>座椅加热订阅 18 美元/月、永久 406 美元</td><td class="num">2022 年试点</td><td>一年内撤回；2026 年宝马互联驾驶商城远程温控 2388 元、行车记录仪应用 1998 元</td></tr>
+        <tr><td>蔚来</td><td>BaaS 电池租用</td><td class="num">980 / 1680 元/月</td><td>订阅（75kWh / 100kWh）</td></tr>
+        <tr><td>蔚来</td><td>NOMI Mate 座舱</td><td class="num">4900 / 5280 元</td><td>购车预装 / 后期加装（加装还贵 380 元）</td></tr>
+        <tr><td>理想</td><td>用车服务包</td><td class="num">999～1399 元/年</td><td>订阅</td></tr>
+        <tr><td>小米 YU7</td><td>真皮 8000、车厘子红 9000、金属漆 7000、冰箱 2000、后排娱乐屏 1000</td><td class="num">选装</td><td>选装</td></tr>
+        <tr><td>问界 M7</td><td>主驾零重力 1 万、后排娱乐屏套装 8000、电动踏板 6800、外饰色 6000</td><td class="num">选装</td><td>选装</td></tr>
+        <tr><td>极氪 001</td><td>空气悬架 2 万、智能感应自动门 1.5 万、座椅舒适套装 6000、雅马哈音响 6000</td><td class="num">选装</td><td>选装</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>分界线在哪</strong>：需要云端持续迭代的服务（智驾算法、座舱语音、云地图）按月订阅，说得过去；而出厂就固化的硬件——加热丝、方向盘加热、前备箱开口——收费缺少说服力。沃尔沃首席商务官 2026 年 5 月接受 motor1 采访时说，一个花 8 万美元买车的人，不该再每月掏 5 美元去用座椅加热。福特 2026 款 Mustang Mach-E 把前备箱改成 495 美元付费选装、不掏钱就用封板堵死，同款车在法国却是标配。</p>
+  </div>
+
+  <h2 id="rules">监管这两年画了什么线</h2>
+  <ul>
+    <li><strong>2026-02-11 市场监管总局《汽车行业价格行为合规指南》第十三条</strong>：有免费期的功能，销售时应当告知免费期限与后续收费标准，免费期结束前应再次提醒消费者；需收费的差异化增值功能，销售时应当明确告知，<strong>未明确告知的差异化增值功能不得收费</strong>。</li>
+    <li><strong>2026 年工信部与市场监管总局《关于规范新能源汽车远程在线升级（OTA）行为的通知》</strong>：严禁静默强制升级、严禁通过 OTA「锁电」降配等。</li>
+    <li><strong>2026 年 3 月</strong>全国 12315 平台 OTA 相关投诉单月超 1.2 万件，同比增长 273%，大量指向未经车主同意远程锁电、缩水续航。</li>
+    <li><strong>2019 年</strong>发改委等多部门的 ETC 实施方案要求车载装置免费安装全覆盖、非人为损坏免费更换——银行办的免费 ETC 普遍正是这条政策的结果。但车企内置 ETC 的「开通费」目前没有统一国家定价标准，属车企自主定价区间。</li>
+    <li>截至目前，尚未见哪家车企因「座椅加热订阅」被公开处罚。规则写得清楚，长出牙齿还要时间。</li>
+  </ul>
+
+  <h2 id="ask">到店时问这 6 句话</h2>
+  <ol class="qa">
+    <li>这台车的内置 ETC 激活要不要钱？多少钱？能不能积分抵扣？写进合同。</li>
+    <li>城市 NOA 是标配、选装还是订阅？一次性还是按月？到期多少钱？</li>
+    <li>补贴有没有窗口期？（例：捷途的 6000 元高阶包权益仅限提车 30 天内）</li>
+    <li>座椅加热 / 通风 / 按摩 / 方向盘加热，是标配还是付费解锁？能不能 OTA 后装？</li>
+    <li>还有哪些按年按月收的？服务包、流量、云服务、BaaS、换电权益。</li>
+    <li>过户后权益还在不在？蔚来的 NOP+ 权益绑账号不随车过户，这就是二手接手的真实成本。</li>
+  </ol>
+
+  <h2 id="src">数据来源</h2>
+  <ul class="srcs">
+    <li>华为引望《华为乾崑智驾 ADS 高阶功能包价格及用户权益更新公告》（2026-06-22）口径，见<a href="https://post.smzdm.com/p/a9545q2o/" target="_blank" rel="noopener">什么值得买：买华为乾崑智驾版要加钱吗</a>、<a href="https://www.toutiao.com/article/7712651749307253248/" target="_blank" rel="noopener">今日头条：阿维塔 06T 的智驾账</a></li>
+    <li>小鹏科技日（2026-11-25）宣布图灵 AI 智驾 2027 年第二季度起订阅，见<a href="https://post.smzdm.com/p/anv5z3p7/" target="_blank" rel="noopener">什么值得买：小鹏智驾 2027 年起订阅收费</a>、<a href="https://news.qq.com/rain/a/20261126A0GY9A00" target="_blank" rel="noopener">腾讯新闻：收费 or 免费，谁才是智驾未来大势</a></li>
+    <li>蔚来 NOP+ 380 元/月、首任车主 5 年免费、权益不随车过户，见<a href="https://post.smzdm.com/p/awwd5m8k/" target="_blank" rel="noopener">什么值得买：全行业送智驾，蔚来偏要按月收费</a></li>
+    <li>特斯拉中国大陆 6.4 万元买断、订阅未上线，见<a href="https://www.21jingji.com/article/20260522/herald/9f1635c36514a9499f9dd1d8485090ec.html" target="_blank" rel="noopener">21 经济网</a>、<a href="https://www.dongchedi.com/article/7475365508335682074" target="_blank" rel="noopener">懂车帝</a></li>
+    <li>比亚迪天神之眼 B 选装价 9900 → 12000 元（2026-05-01 生效）、迪迪虾赠 1 年，见<a href="https://www.sina.cn/gc/article/niyfqtc2688454.html" target="_blank" rel="noopener">新浪新闻：海狮 06 DM-i 选装天神之眼 B 要 1.2 万</a>、<a href="https://static.nfnews.com/content/202604/29/c12384008.html" target="_blank" rel="noopener">南方+</a></li>
+    <li>极氪 001 冬季温度包 2400 元与 ZAD 一次性开通价，见<a href="https://www.pcauto.com.cn/jxwd/5170/51703757.html" target="_blank" rel="noopener">太平洋汽车</a>、<a href="https://www.dongchedi.com/article/7590036820676166169" target="_blank" rel="noopener">懂车帝：001 WE 版老车主免费体验</a></li>
+    <li>座椅加热 / 通风订阅的行业盘点（宝马、smart、沃尔沃、福特）与监管口径，见<a href="https://news.qq.com/rain/a/20261013A0ARIV00" target="_blank" rel="noopener">腾讯新闻：怪哉！座椅加热也要开始收「取暖费」了？</a></li>
+    <li>问界 ETC「硬件前装预埋 + 软件 license 付费开通」与 ADS 高阶包购买方式，见<a href="https://hima.auto/wenjie/m7-new/configuration/" target="_blank" rel="noopener">鸿蒙智行官方配置表</a>；499 元 ETC 投诉见<a href="https://m.12365auto.com/zlts/20261031/1814347.shtml" target="_blank" rel="noopener">车质网</a></li>
+    <li>小米 ETC 免费激活与各家 ETC 价差，见<a href="https://view.inews.qq.com/a/20251119A05BRF00" target="_blank" rel="noopener">腾讯新闻：雷军称小米 SU7 Ultra 与 YU7 ETC 功能免费激活</a>、<a href="https://youjia-pc.bdstatic.com/article/10460197119283769595.html" target="_blank" rel="noopener">有驾：各家车载内置 ETC 收费差异</a></li>
+    <li>理想「相关能力与升级不额外收费」与 AD Max 全系标配，见<a href="https://news.qq.com/rain/a/20261126A0GY9A00" target="_blank" rel="noopener">腾讯新闻</a>、<a href="https://chejiahao.autohome.com.cn/info/26731627" target="_blank" rel="noopener">汽车之家</a></li>
+  </ul>
+  <p class="srcs">数据采集于 2026 年 11 月。标「存疑」「未查到」「未核实」的条目为尚未取得官方口径的部分，欢迎提交 Issue 补充来源。金额随车型、地区、购车权益浮动，<strong>以官方 App / 配置页 / 购车合同为准</strong>。</p>
+
+</main>
+
+<footer class="wrap">
+  <p>本项目数据仅供参考，不构成任何购买建议；实际费用以各车企官方 App、门店与购车合同为准。</p>
+  <p>数据为公开资料整理，请理性看待 · MIT License © 2026 dujeongil-galaxy</p>
+  <p><a href="https://github.com/dujeongil-galaxy/etc-fee-comparison" target="_blank" rel="noopener">GitHub 仓库</a> · <a href="https://github.com/dujeongil-galaxy/shuangxiugou" target="_blank" rel="noopener">双休购 · 查公司双休评级</a></p>
+</footer>
+
+<script>
+(function () {
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('#filters button'));
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.row[data-dim]'));
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+
+  function apply(filter) {
+    rows.forEach(function (row) {
+      row.hidden = filter !== 'all' && row.getAttribute('data-dim') !== filter;
+    });
+    cards.forEach(function (card) {
+      var visible = card.querySelectorAll('.row[data-dim]:not([hidden])').length;
+      card.hidden = visible === 0;
+    });
+    buttons.forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-filter') === filter ? 'true' : 'false');
+    });
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      apply(btn.getAttribute('data-filter'));
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
