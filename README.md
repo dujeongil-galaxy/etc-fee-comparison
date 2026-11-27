@@ -6,7 +6,7 @@
 
 数据采集于 2026 年 11 月，持续更新。金额因车型、地区、购车权益而浮动，**下单前一律以官方 App / 配置页 / 购车合同为准**。
 
-> 在线单页版（手机可读、可按费用类型筛选）：在仓库 **Settings → Pages** 把 Source 选为 `Deploy from a branch`（分支 `main`、目录 `/root`）后访问 `https://dujeongil-galaxy.github.io/etc-fee-comparison/`。
+> 在线单页版（手机可读、可按费用类型筛选）：**https://dujeongil-galaxy.github.io/etc-fee-comparison/**
 
 ---
 
