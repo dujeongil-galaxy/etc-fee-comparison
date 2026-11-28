@@ -105,12 +105,19 @@ code{background:var(--panel-2); padding:.1em .4em; border-radius:5px; font-size:
 .result-grid b{display:block; font-size:1.18rem; letter-spacing:-.01em}
 .result-grid span{color:var(--faint); font-size:.79rem}
 .bars{margin-top:16px}
-.bar{display:grid; grid-template-columns:5.6em 1fr 7em; gap:10px; align-items:center; margin:7px 0; font-size:.86rem}
+.bar{display:grid; grid-template-columns:7.6em 1fr 7.4em; gap:10px; align-items:center; margin:7px 0; font-size:.86rem}
 .bar .track{background:var(--panel-2); border-radius:999px; height:12px; overflow:hidden}
 .bar .fill{height:100%; background:var(--blue); border-radius:999px}
 .bar.is-current .fill{background:var(--accent)}
 .bar .amt{text-align:right; color:var(--muted); white-space:nowrap}
 .hint{color:var(--faint); font-size:.82rem; margin:12px 0 0}
+.chips button{max-width:100%; text-align:left; line-height:1.55}
+.sunk{margin-top:14px; padding:11px 13px; border:1px dashed var(--line); border-radius:10px; background:var(--panel-2); font-size:.87rem; color:var(--muted); line-height:1.8}
+.sunk b{color:var(--text)}
+.sunk .warnline{color:var(--orange); font-weight:600}
+.bar .nm{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.bar .amt{font-variant-numeric:tabular-nums}
+.bar .amt em{font-style:normal; color:var(--faint); font-size:.78rem; margin-left:4px}
 .hint b{color:var(--muted)}
 
 /* tables */
@@ -350,8 +357,8 @@ footer p{margin:.3em 0}
   </section>
 
   <section id="calc" aria-label="持有期总账计算器">
-    <h2>五年总账：这台车开出去还要掏多少钱</h2>
-    <p>按你打算怎么买，算出持有 N 年的实际支出。数字全部取自上面各品牌的公开口径，不是估算模型；默认只算「车外费用」，不含车价本身。</p>
+    <h2>持有期总账：这台车开出去还要掏多少钱</h2>
+    <p>按你打算怎么买，算出持有 N 年的实际支出。数字全部取自上面各品牌的公开口径，不是估算模型；默认只算「车外费用」，不含车价本身。<strong>已经付过的钱不进这个账</strong>——它单列在下面的「沉没成本」里：那是过去的事，不会因为你今天买到标配就退还，也不该再算进你要付的钱。</p>
     <div class="calc">
       <div class="calc-grid">
         <div class="field">
@@ -359,7 +366,7 @@ footer p{margin:.3em 0}
           <select id="calc-brand"></select>
         </div>
         <div class="field">
-          <label>城市 NOA 怎么获得</label>
+          <label>城市 NOA 怎么获得（这台车的口径）</label>
           <div class="chips" id="calc-noa" role="group" aria-label="城市 NOA 获取方式"></div>
         </div>
         <div class="field">
@@ -367,12 +374,17 @@ footer p{margin:.3em 0}
           <div class="chips" id="calc-years" role="group" aria-label="持有年限"></div>
         </div>
       </div>
+      <div class="field" style="margin-top:16px">
+        <label>这是什么场景</label>
+        <div class="chips" id="calc-scene" role="group" aria-label="购车场景"></div>
+      </div>
       <div class="field" style="margin-top:18px">
         <label>再勾上你打算买的其他付费项（可多选）</label>
         <ul class="checks" id="calc-extras"></ul>
       </div>
       <div class="result">
         <div class="result-grid" id="calc-out"></div>
+        <div id="calc-sunk"></div>
         <div class="bars" id="calc-bars"></div>
         <p class="hint" id="calc-hint"></p>
       </div>
@@ -616,344 +628,381 @@ footer p{margin:.3em 0}
 <script>
 (function () {
   var DATA = [
-    {
-      id: 'xiaomi', name: '小米',
-      etc: { label: '内置 ETC 免费（2025 年 11 月起）', once: 0 },
-      noa: [
-        { label: '标配 Xiaomi HAD，终身免费', once: 0 },
-        { label: '选装 HAD（含车位到车位）', once: 26000 },
-        { label: '当年已单独付费买过（Pro 增强 1.8 万 / Max 增强 2.6 万）', once: 26000 }
-      ],
-      extras: [
-        { label: '副驾零重力座椅（选装）', once: 9000 },
-        { label: '车载智能冰箱（压缩机版）', once: 3000 },
-        { label: '后排移动控制屏', once: 1000 },
-        { label: '电动前备箱', once: 2000 },
-        { label: '碳纤维套件', once: 11000 },
-        { label: '科技舒享套装（限时价，原 1.5 万）', once: 7000 }
-      ],
-      own: '跟车：HAD 权益与车绑定，二手随车转移',
-      tip: '官方配置表脚注写明，城市领航辅助需满足一定行驶里程条件方能开启。'
-    },
-    {
-      id: 'lixiang', name: '理想',
-      etc: { label: '内置 ETC 50 元', once: 50 },
-      noa: [{ label: 'AD Max 标配，城市 NOA 终身免费、无订阅', once: 0 }],
-      extras: [
-        { label: '用车服务包（约 999～1399 元/年）', perYear: 999 },
-        { label: 'L7 后排娱乐屏（选装）', once: 10000 },
-        { label: 'L7 车漆（选装）', once: 8000 },
-        { label: 'L7 21 寸轮毂（选装）', once: 10000 },
-        { label: '双腔空气悬架 + 后舱娱乐屏（i6 口径）', once: 16000 }
-      ],
-      own: '跟车：2023 年公开承诺，二手买家可继续用',
-      tip: '这是目前公开保留「不额外收费」表述且覆盖二手的品牌。'
-    },
-    {
-      id: 'nio', name: '蔚来',
-      etc: { label: '内置 ETC 约 60 元（口径存疑）', once: 60 },
-      noa: [{ label: 'NOP+ 订阅（不提供买断）', perMonth: 380 }],
-      extras: [
-        { label: 'NAD 完整版（规划中，尚未落地）', perMonth: 680 },
-        { label: 'BaaS 电池租用 75kWh', perMonth: 980 },
-        { label: 'BaaS 电池租用 100kWh', perMonth: 1680 },
-        { label: '服务无忧（基础档，约 499 元/年）', perYear: 499 },
-        { label: 'NOMI Mate 购车预装', once: 4900 }
-      ],
-      own: '跟人：权益与账号绑定、随账号走，二手不继承免费额度',
-      tip: '首任车主赠 5 年，但接手当天起按 380 元/月订阅。'
-    },
-    {
-      id: 'hima', name: '问界 / 智界',
-      etc: { label: '内置 ETC 499 元', once: 499 },
-      noa: [
-        { label: 'ADS Max 买断（官方标价）', once: 36000 },
-        { label: 'ADS Max 买断（车企补贴后实付）', once: 15000 },
-        { label: 'ADS Max 订阅（连续包月）', perMonth: 499 },
-        { label: 'ADS Max 年卡', perYear: 4999 },
-        { label: 'ADS Pro 买断', once: 12000 },
-        { label: 'ADS SE 买断', once: 5000 }
-      ],
-      extras: [
-        { label: '问界 M7 主驾零重力座椅', once: 10000 },
-        { label: '问界 M7 后排娱乐屏套装', once: 8000 },
-        { label: '问界 M7 电动踏板', once: 6800 }
-      ],
-      own: '跟车：买断权益写进 VIN，下家继续用',
-      tip: '官方标准价 36000 元（2026-07-01 由 3.2 万恢复），实付看车企补贴。'
-    },
-    {
-      id: 'tesla', name: '特斯拉',
-      etc: { label: '内置 ETC 299 元', once: 299 },
-      noa: [
-        { label: '智能辅助驾驶（城市 NOA）买断', once: 64000 },
-        { label: '增强辅助驾驶 EAP 买断（仅高速）', once: 32000 }
-      ],
-      extras: [
-        { label: '20 寸轮毂 / 车漆 / 浅灰内饰（选装）', once: 8000 },
-        { label: '寒冷套件（后排座椅加热，OTA 付费）', once: 2400 }
-      ],
-      own: '跟车：买断随车转移，订阅则跟人',
-      tip: '中国大陆只提供一次性买断，订阅未上线；需 HW4 硬件。'
-    },
-    {
-      id: 'byd', name: '比亚迪',
-      etc: { label: '内置 ETC 50 元', once: 50 },
-      noa: [
-        { label: '天神之眼 C 标配（仅高速 NOA，无城市 NOA）', once: 0 },
-        { label: '选装天神之眼 B 激光版（解锁城市 NOA）', once: 12000 }
-      ],
-      extras: [{ label: '第三代唐四驱线控选装包', once: 20000 }],
-      own: '跟车：B 版硬件绑车，老车基本无法后加激光雷达',
-      tip: '选装 B 版赠迪迪虾 1 年，到期需自行付费解锁。'
-    },
-    {
-      id: 'xpeng', name: '小鹏',
-      etc: { label: '内置 ETC 未查到（商城定制无卡 ETC 139 元属外购件）', once: 0 },
-      noa: [{ label: '现在随车赠送（2027 年二季度起新购车改订阅，价未公布）', once: 0 }],
-      extras: [
-        { label: 'Ultra 智能升级包（3 颗图灵芯片）', once: 20000 },
-        { label: 'Ultra SE（2 颗图灵芯片）', once: 12000 }
-      ],
-      own: '跟车：随车赠送，二手继续用',
-      tip: '2027 年第二季度起新购车用户走订阅，价格官方 2027 年才公布。'
-    },
-    {
-      id: 'zeekr', name: '极氪',
-      etc: { label: '内置 ETC 约 129 元', once: 129 },
-      noa: [
-        { label: '现在 0 元开通、终身免费', once: 0 },
-        { label: '历史：ZAD 完全智驾一次性开通', once: 35000 }
-      ],
-      extras: [
-        { label: '冬季温度包（后排座椅加热 + 方向盘加热）', once: 2400 },
-        { label: '空气悬架（001 上市时期价）', once: 20000 },
-        { label: '智能感应自动门（001 上市时期价）', once: 15000 },
-        { label: '座椅舒适套装（001 上市时期价）', once: 6000 }
-      ],
-      own: '跟车：终身免费限购车条件与下定批次，过期不补',
-      tip: '同一根加热丝，早买的多花钱，晚买的白捡。'
-    },
-    {
-      id: 'leap', name: '零跑',
-      etc: { label: '内置 ETC 未收录', once: 0 },
-      noa: [{ label: '激光雷达版世界模型智驾终身免费', once: 0 }],
-      extras: [],
-      own: '跟车：激光雷达版终身免费',
-      tip: '2027 年第一季度起向全系提供免费 OTA。'
-    }
-  ];
-
-  var YEARS = [1, 3, 5, 8];
-  // 权益归属：car=跟车（写进 VIN，卖车能折价）/ person=跟人（挂账号，卖车归原主）
-  // / tbd=厂家暂无官方明确口径。顺序与 DATA 里各品牌 noa 数组一一对应。
-  var OWN = {
-    xiaomi: ['car', 'car', 'car'],
-    lixiang: ['car'],
-    nio: ['person'],
-    hima: ['car', 'car', 'person', 'person', 'car', 'car'],
-    tesla: ['car', 'car'],
-    byd: ['car', 'car'],
-    xpeng: ['tbd'],
-    zeekr: ['car', 'car'],
-    leap: ['car']
-  };
-  var OWN_TEXT = {
-    car: '权益跟车：这笔权益写在车（VIN）上，卖车时能折价，二手买家接着用。',
-    person: '权益跟人：这笔权益挂在你账号上，卖车就归原车主，二手买家要重新付费。',
-    tbd: '归属待官方口径：赠送的终身权益是否随车转移，厂家暂无明确说法，购车前报 VIN 问。'
-  };
-  var state = { brand: 'xiaomi', noa: 0, years: 5, extras: {} };
-  var $brand = document.getElementById('calc-brand');
-  var $noa = document.getElementById('calc-noa');
-  var $years = document.getElementById('calc-years');
-  var $extras = document.getElementById('calc-extras');
-  var $out = document.getElementById('calc-out');
-  var $bars = document.getElementById('calc-bars');
-  var $hint = document.getElementById('calc-hint');
-
-  function fmt(n) {
-    if (!n) return '0 元';
-    if (n >= 10000) {
-      var w = (n / 10000).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-      return w + ' 万元';
-    }
-    return n.toLocaleString('zh-CN') + ' 元';
+  {
+    id: 'xiaomi', name: '小米',
+    etc: { label: '内置 ETC 免费（2025 年 11 月起）', once: 0 },
+    noa: [
+      { label: '标配 Xiaomi HAD，终身免费', mode: 'free', own: 'car' },
+      { label: '选装 HAD（含车位到车位）', mode: 'once', once: 26000, own: 'car' }
+    ],
+    legacy: { amount: 26000, note: '当年 Max 增强 2.6 万（Pro 增强 1.8 万）' },
+    extras: [
+      { label: '副驾零重力座椅（选装）', once: 9000 },
+      { label: '车载智能冰箱（压缩机版）', once: 3000 },
+      { label: '后排移动控制屏', once: 1000 },
+      { label: '电动前备箱', once: 2000 },
+      { label: '碳纤维套件', once: 11000 },
+      { label: '科技舒享套装（限时价，原 1.5 万）', once: 7000 }
+    ],
+    ownNote: '官方配置表：HAD 权益与车绑定，随车不随人。'
+  },
+  {
+    id: 'lixiang', name: '理想',
+    etc: { label: '内置 ETC 50 元', once: 50 },
+    noa: [{ label: 'AD Max 全系标配，城市 NOA 终身免费、无订阅', mode: 'free', own: 'car' }],
+    legacy: { amount: null, note: '当年 AD Max 曾为付费选装，媒体口径约 2.5～3 万，官方价目未取到' },
+    extras: [
+      { label: '用车服务包（约 999～1399 元/年）', perYear: 999 },
+      { label: 'L7 后排娱乐屏（选装）', once: 10000 },
+      { label: 'L7 车漆（选装）', once: 8000 },
+      { label: 'L7 21 寸轮毂（选装）', once: 10000 },
+      { label: '双腔空气悬架 + 后舱娱乐屏（i6 口径）', once: 16000 }
+    ],
+    ownNote: '2023 年公开承诺相关能力与升级不额外收费，二手买家可继续用。'
+  },
+  {
+    id: 'nio', name: '蔚来',
+    etc: { label: '内置 ETC 约 60 元（口径存疑）', once: 60 },
+    noa: [{ label: 'NOP+ 订阅（不提供买断）', mode: 'sub', perMonth: 380, own: 'person' }],
+    legacy: { amount: null, note: 'NOP+ 一直是按月订阅，没有一次性买断，不存在沉没的买断款' },
+    extras: [
+      { label: 'NAD 完整版（规划中，尚未落地）', perMonth: 680 },
+      { label: 'BaaS 电池租用 75kWh', perMonth: 980 },
+      { label: 'BaaS 电池租用 100kWh', perMonth: 1680 },
+      { label: '服务无忧（基础档，约 499 元/年）', perYear: 499 },
+      { label: 'NOMI Mate 购车预装', once: 4900 }
+    ],
+    ownNote: '与账号绑定、随账号走：卖车权益归原车主，二手买家不继承免费额度。'
+  },
+  {
+    id: 'hima', name: '问界 / 智界',
+    etc: { label: '内置 ETC 499 元', once: 499 },
+    noa: [
+      { label: 'ADS Max 买断（官方标价）', mode: 'once', once: 36000, own: 'car' },
+      { label: 'ADS Max 买断（车企补贴后实付）', mode: 'once', once: 15000, own: 'car' },
+      { label: 'ADS Max 订阅（连续包月）', mode: 'sub', perMonth: 499, own: 'person' },
+      { label: 'ADS Max 年卡', mode: 'sub', perYear: 4999, own: 'person' },
+      { label: 'ADS Pro 买断', mode: 'once', once: 12000, own: 'car' },
+      { label: 'ADS SE 买断', mode: 'once', once: 5000, own: 'car' }
+    ],
+    legacy: { amount: 36000, note: '当年 ADS Max 买断 3.2～3.6 万' },
+    extras: [
+      { label: '问界 M7 主驾零重力座椅', once: 10000 },
+      { label: '问界 M7 后排娱乐屏套装', once: 8000 },
+      { label: '问界 M7 电动踏板', once: 6800 }
+    ],
+    ownNote: 'ADS 买断写进 VIN（随车）；ADS 订阅挂账号（随人）。'
+  },
+  {
+    id: 'tesla', name: '特斯拉',
+    etc: { label: '内置 ETC 299 元', once: 299 },
+    noa: [
+      { label: '智能辅助驾驶（城市 NOA）买断', mode: 'once', once: 64000, own: 'car' },
+      { label: '增强辅助驾驶 EAP 买断（仅高速）', mode: 'once', once: 32000, own: 'car' }
+    ],
+    legacy: { amount: 64000, note: '当年 FSD 买断 6.4 万' },
+    extras: [
+      { label: '20 寸轮毂 / 车漆 / 浅灰内饰（选装）', once: 8000 },
+      { label: '寒冷套件（后排座椅加热，OTA 付费）', once: 2400 }
+    ],
+    ownNote: '买断随车转移、订阅绑个人账户（自媒体口径，未查到官方条款原文）。'
+  },
+  {
+    id: 'byd', name: '比亚迪',
+    etc: { label: '内置 ETC 50 元', once: 50 },
+    noa: [
+      { label: '天神之眼 C 标配（仅高速 NOA，无城市 NOA）', mode: 'free', own: 'car' },
+      { label: '选装天神之眼 B 激光版（解锁城市 NOA）', mode: 'once', once: 12000, own: 'car' }
+    ],
+    legacy: { amount: 12000, note: '当年天神之眼 B 选装 9900～1.2 万' },
+    extras: [{ label: '第三代唐四驱线控选装包', once: 20000 }],
+    ownNote: 'B 版硬件绑车、选装只支持新车下定；C 版出厂即标配。'
+  },
+  {
+    id: 'xpeng', name: '小鹏',
+    etc: { label: '内置 ETC 未查到（商城定制无卡 ETC 139 元属外购）', once: 0 },
+    noa: [{ label: '现在随车赠送（2027 年二季度起新购车改订阅，价未公布）', mode: 'free', own: 'tbd' }],
+    legacy: { amount: null, note: '当年以选装或赠送获得，未取到统一价目' },
+    extras: [
+      { label: 'Ultra 智能升级包（3 颗图灵芯片）', once: 20000 },
+      { label: 'Ultra SE（2 颗图林芯片）', once: 12000 }
+    ],
+    ownNote: '首销赠送的终身权益是否随车转移、二手怎么算，厂家暂无官方明确说法。'
+  },
+  {
+    id: 'zeekr', name: '极氪',
+    etc: { label: '内置 ETC 约 129 元', once: 129 },
+    noa: [
+      { label: '现在 0 元开通、终身免费', mode: 'free', own: 'car' },
+      { label: '历史：ZAD 完全智驾一次性开通', mode: 'once', once: 35000, own: 'car' }
+    ],
+    legacy: { amount: 35000, note: '当年 ZAD 完全智驾一次性 3.5 万' },
+    extras: [
+      { label: '冬季温度包（后排座椅加热 + 方向盘加热）', once: 2400 },
+      { label: '空气悬架（001 上市时期价）', once: 20000 },
+      { label: '智能感应自动门（001 上市时期价）', once: 15000 },
+      { label: '座椅舒适套装（001 上市时期价）', once: 6000 }
+    ],
+    ownNote: '终身免费限购车条件与下定批次，权益在车上，过期不补。'
+  },
+  {
+    id: 'leap', name: '零跑',
+    etc: { label: '内置 ETC 未收录', once: 0 },
+    noa: [{ label: '激光雷达版世界模型智驾终身免费', mode: 'free', own: 'car' }],
+    legacy: { amount: null, note: '收录时即为终身免费，无买断沉没款' },
+    extras: [],
+    ownNote: '激光雷达版世界模型智驾终身免费，随车。'
   }
+];
 
-  function cur() {
-    for (var i = 0; i < DATA.length; i++) { if (DATA[i].id === state.brand) return DATA[i]; }
-    return DATA[0];
+var YEARS = [1, 3, 5, 8];
+var SCENES = [
+  { id: 'first', label: '首购这台车' },
+  { id: 'switch', label: '从上一台车换过来' }
+];
+// 权益归属话术：car=跟车 / person=跟人 / tbd=厂家暂无明确口径
+var OWN_TEXT = {
+  car: {
+    first: '这笔权益写在车（VIN）上：卖车时它能折价，二手买家接着用。',
+    switch: '上一台的权益写在那台车的 VIN 上，会随旧车一起走；这台车要按新车政策重新获得（标配或赠送通常是 0 元，买断类要重新买）。'
+  },
+  person: {
+    first: '这笔权益挂在你账号上：卖车就归原车主，二手买家要重新付费。',
+    switch: '权益挂在你的账号上、跟着你走：换到同品牌的下一台车，订阅不用重新订；换品牌则要重新订阅。'
+  },
+  tbd: {
+    first: '归属待官方口径：赠送的终身权益是否随车转移，厂家暂无明确说法，购车前报 VIN 问。',
+    switch: '厂家对赠送权益是否随车转移没有官方明确说法，换车前先报 VIN 问清楚。'
   }
+};
 
-  function totals(b, noa, extras, years) {
-    var once = (b.etc.once || 0) + (noa.once || 0);
-    var perYear = (noa.perYear || 0);
-    var perMonth = (noa.perMonth || 0);
-    (extras || []).forEach(function (x) {
-      once += x.once || 0;
-      perYear += x.perYear || 0;
-      perMonth += x.perMonth || 0;
+var state = { brand: 'xiaomi', noa: 0, years: 5, scene: 'first', extras: {} };
+var $brand = document.getElementById('calc-brand');
+var $noa = document.getElementById('calc-noa');
+var $years = document.getElementById('calc-years');
+var $scene = document.getElementById('calc-scene');
+var $extras = document.getElementById('calc-extras');
+var $out = document.getElementById('calc-out');
+var $sunk = document.getElementById('calc-sunk');
+var $bars = document.getElementById('calc-bars');
+var $hint = document.getElementById('calc-hint');
+
+function fmt(n) {
+  if (!n) return '0 元';
+  if (n >= 10000) {
+    var w = (n / 10000).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+    return w + ' 万元';
+  }
+  return n.toLocaleString('zh-CN') + ' 元';
+}
+
+function cur() {
+  for (var i = 0; i < DATA.length; i++) { if (DATA[i].id === state.brand) return DATA[i]; }
+  return DATA[0];
+}
+
+function totals(b, noa, extras, years) {
+  var once = (b.etc.once || 0) + (noa.once || 0);
+  var perYear = noa.perYear || 0;
+  var perMonth = noa.perMonth || 0;
+  (extras || []).forEach(function (x) {
+    once += x.once || 0;
+    perYear += x.perYear || 0;
+    perMonth += x.perMonth || 0;
+  });
+  var yearly = perYear + perMonth * 12;
+  return { once: once, yearly: yearly, perMonth: perMonth, perYear: perYear, total: once + yearly * years };
+}
+
+function renderBrandOptions() {
+  $brand.innerHTML = '';
+  DATA.forEach(function (b) {
+    var o = document.createElement('option');
+    o.value = b.id;
+    o.textContent = b.name;
+    if (b.id === state.brand) o.selected = true;
+    $brand.appendChild(o);
+  });
+}
+
+function renderNoa() {
+  var b = cur();
+  $noa.innerHTML = '';
+  b.noa.forEach(function (n, i) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip';
+    btn.textContent = n.label;
+    btn.setAttribute('aria-pressed', i === state.noa ? 'true' : 'false');
+    btn.addEventListener('click', function () { state.noa = i; renderNoa(); render(); });
+    $noa.appendChild(btn);
+  });
+}
+
+function renderYears() {
+  $years.innerHTML = '';
+  YEARS.forEach(function (y) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip';
+    btn.textContent = y + ' 年';
+    btn.setAttribute('aria-pressed', y === state.years ? 'true' : 'false');
+    btn.addEventListener('click', function () { state.years = y; renderYears(); render(); });
+    $years.appendChild(btn);
+  });
+}
+
+function renderScenes() {
+  $scene.innerHTML = '';
+  SCENES.forEach(function (s) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip';
+    btn.textContent = s.label;
+    btn.setAttribute('aria-pressed', s.id === state.scene ? 'true' : 'false');
+    btn.addEventListener('click', function () { state.scene = s.id; renderScenes(); render(); });
+    $scene.appendChild(btn);
+  });
+}
+
+function renderExtras() {
+  var b = cur();
+  $extras.innerHTML = '';
+  if (!b.extras.length) {
+    var li0 = document.createElement('li');
+    li0.innerHTML = '<label style="color:var(--faint)">该品牌未收录其他付费项</label>';
+    $extras.appendChild(li0);
+    return;
+  }
+  b.extras.forEach(function (x) {
+    var li = document.createElement('li');
+    var id = 'ex_' + b.id + '_' + x.label.replace(/\W+/g, '');
+    var lab = document.createElement('label');
+    lab.setAttribute('for', id);
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = id;
+    cb.checked = !!state.extras[x.label];
+    cb.addEventListener('change', function () {
+      state.extras[x.label] = cb.checked;
+      render();
     });
-    var yearly = perYear + perMonth * 12;
-    return { once: once, yearly: yearly, perMonth: perMonth, perYear: perYear, total: once + yearly * years };
-  }
+    var price = x.once ? fmt(x.once) : (x.perYear ? fmt(x.perYear) + '/年' : fmt(x.perMonth) + '/月');
+    var span = document.createElement('span');
+    span.textContent = x.label + '（' + price + '）';
+    lab.appendChild(cb);
+    lab.appendChild(span);
+    li.appendChild(lab);
+    $extras.appendChild(li);
+  });
+}
 
-  function renderBrandOptions() {
-    $brand.innerHTML = '';
-    DATA.forEach(function (b) {
-      var o = document.createElement('option');
-      o.value = b.id;
-      o.textContent = b.name;
-      if (b.id === state.brand) o.selected = true;
-      $brand.appendChild(o);
-    });
-  }
+function render() {
+  var b = cur();
+  var noa = b.noa[state.noa];
+  var picked = b.extras.filter(function (x) { return state.extras[x.label]; });
+  var t = totals(b, noa, picked, state.years);
 
-  function renderNoa() {
-    var b = cur();
-    $noa.innerHTML = '';
-    b.noa.forEach(function (n, i) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'chip';
-      btn.textContent = n.label;
-      btn.setAttribute('aria-pressed', i === state.noa ? 'true' : 'false');
-      btn.addEventListener('click', function () { state.noa = i; renderNoa(); render(); });
-      $noa.appendChild(btn);
-    });
-  }
-
-  function renderYears() {
-    $years.innerHTML = '';
-    YEARS.forEach(function (y) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'chip';
-      btn.textContent = y + ' 年';
-      btn.setAttribute('aria-pressed', y === state.years ? 'true' : 'false');
-      btn.addEventListener('click', function () { state.years = y; renderYears(); render(); });
-      $years.appendChild(btn);
-    });
-  }
-
-  function renderExtras() {
-    var b = cur();
-    $extras.innerHTML = '';
-    if (!b.extras.length) {
-      var li = document.createElement('li');
-      li.innerHTML = '<label style="color:var(--faint)">该品牌未收录其他付费项</label>';
-      $extras.appendChild(li);
-      return;
-    }
-    b.extras.forEach(function (x) {
-      var li = document.createElement('li');
-      var id = 'ex_' + b.id + '_' + x.label.replace(/\W+/g, '');
-      var lab = document.createElement('label');
-      lab.setAttribute('for', id);
-      var cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.id = id;
-      cb.checked = !!state.extras[x.label];
-      cb.addEventListener('change', function () {
-        state.extras[x.label] = cb.checked;
-        render();
-      });
-      var price = x.once ? fmt(x.once) : (x.perYear ? fmt(x.perYear) + '/年' : fmt(x.perMonth) + '/月');
-      var span = document.createElement('span');
-      span.textContent = x.label + '（' + price + '）';
-      lab.appendChild(cb);
-      lab.appendChild(span);
-      li.appendChild(lab);
-      $extras.appendChild(li);
-    });
-  }
-
-  function render() {
-    var b = cur();
-    var picked = b.extras.filter(function (x) { return state.extras[x.label]; });
-    var t = totals(b, b.noa[state.noa], picked, state.years);
-
-    $out.innerHTML = '';
-    [
-      ['一次性支出', fmt(t.once)],
-      ['每年固定', fmt(t.yearly)],
-      ['首年合计', fmt(t.once + t.yearly)],
-      [state.years + ' 年合计', fmt(t.total)],
-      ['折合月均', fmt(Math.round(t.total / (state.years * 12)))]
-    ].forEach(function (pair) {
-      var d = document.createElement('div');
-      var s = document.createElement('span');
-      s.textContent = pair[0];
-      var bb = document.createElement('b');
-      bb.textContent = pair[1];
-      d.appendChild(s);
-      d.appendChild(bb);
-      $out.appendChild(d);
-    });
-
-    var rows = DATA.map(function (x) {
-      return { name: x.name, t: totals(x, x.noa[0], [], state.years).total, id: x.id };
-    }).sort(function (a, c) { return a.t - c.t; });
-    var max = rows.length ? rows[rows.length - 1].t : 1;
-    $bars.innerHTML = '<p class="hint" style="margin:0 0 8px">同口径对照：各品牌按默认方案（ETC + 第一种 NOA 获取方式、不含选装）持有 ' + state.years + ' 年的合计。多条为 0 就是结论本身——这几家在默认口径下不额外收钱。</p>';
-    rows.forEach(function (r) {
-      var row = document.createElement('div');
-      row.className = 'bar' + (r.id === state.brand ? ' is-current' : '');
-      var nm = document.createElement('span');
-      nm.textContent = r.name;
-      var tr = document.createElement('span');
-      tr.className = 'track';
-      var fl = document.createElement('span');
-      fl.className = 'fill';
-      fl.style.width = (max ? Math.max(2, Math.round(r.t / max * 100)) : 0) + '%';
-      tr.appendChild(fl);
-      var am = document.createElement('span');
-      am.className = 'amt';
-      am.textContent = fmt(r.t);
-      row.appendChild(nm);
-      row.appendChild(tr);
-      row.appendChild(am);
-      $bars.appendChild(row);
-    });
-
-    $hint.innerHTML = '';
-    var p1 = document.createElement('p');
-    p1.innerHTML = '<b>内置 ETC：</b>' + b.etc.label;
-    var p2 = document.createElement('p');
-    p2.innerHTML = '<b>权益归属：</b>' + b.own;
-    if (b.tip) {
-      var p3 = document.createElement('p');
-      p3.innerHTML = '<b>提示：</b>' + b.tip;
-      $hint.appendChild(p1);
-      $hint.appendChild(p2);
-      $hint.appendChild(p3);
-    } else {
-      $hint.appendChild(p1);
-      $hint.appendChild(p2);
-    }
-    var p4 = document.createElement('p');
-    var ownKey49 = (OWN[b.id] || [])[state.noa] || 'tbd';
-    var pOwn = document.createElement('p');
-    pOwn.innerHTML = '<b>卖车时这笔钱还算不算数：</b>' + OWN_TEXT[ownKey49];
-    $hint.appendChild(pOwn);
-    p4.textContent = '计算口径：一次性支出 = ETC + 智驾 + 已勾选的一次性选装；每年固定 = 订阅类 × 年数。金额随车型、地区、购车权益浮动，以官方 App / 配置页 / 购车合同为准。';
-    $hint.appendChild(p4);
-  }
-
-  $brand.addEventListener('change', function () {
-    state.brand = $brand.value;
-    state.noa = 0;
-    renderNoa();
-    renderExtras();
-    render();
+  /* 结果数字 */
+  $out.innerHTML = '';
+  [
+    ['一次性支出', fmt(t.once)],
+    ['每年另付（订阅类）', fmt(t.yearly)],
+    ['首年合计', fmt(t.once + t.yearly)],
+    [state.years + ' 年合计', fmt(t.total)],
+    ['折合月均（把一次性摊到每月）', fmt(Math.round(t.total / (state.years * 12)))]
+  ].forEach(function (pair) {
+    var d = document.createElement('div');
+    var s = document.createElement('span');
+    s.textContent = pair[0];
+    var bb = document.createElement('b');
+    bb.textContent = pair[1];
+    d.appendChild(s);
+    d.appendChild(bb);
+    $out.appendChild(d);
   });
 
-  renderBrandOptions();
+  /* 沉没成本：当年付过的钱，单列，不进合计 */
+  $sunk.innerHTML = '';
+  if (b.legacy) {
+    var box = document.createElement('div');
+    box.className = 'sunk';
+    var line = '<b>当年为智驾付过的钱（沉没成本，不计入上面的合计）：</b>'
+      + (b.legacy.amount ? fmt(b.legacy.amount) : '金额未取到')
+      + '　—— ' + b.legacy.note + '。';
+    if (b.legacy.amount) {
+      line += '<br><span class="warnline">这笔钱不会因为你今天买到标配就退还</span>，能保住的是权益本身：'
+        + (noa.own === 'person' ? '权益跟你的账号走。' : '权益留在车（VIN）上。') + '</span>';
+    }
+    box.innerHTML = line;
+    $sunk.appendChild(box);
+  }
+
+  /* 提示：按场景 + 权益归属 */
+  $hint.innerHTML = '';
+  var ownKey = noa.own || 'tbd';
+  var p1 = document.createElement('p');
+  p1.innerHTML = '<b>' + (state.scene === 'switch' ? '换车时要注意：' : '这台车的权益归属：') + '</b>' + OWN_TEXT[ownKey][state.scene];
+  $hint.appendChild(p1);
+  var p2 = document.createElement('p');
+  p2.innerHTML = '<b>品牌口径：</b>' + b.ownNote;
+  $hint.appendChild(p2);
+  var p3 = document.createElement('p');
+  p3.textContent = '计算口径：一次性支出 = ETC + 本台车的城市 NOA 获取成本 + 已勾选的一次性选装；每年另付 = 订阅类 × 12。'
+    + '「折合月均」是把一次性支出摊到每月的平均数，不代表每月真要付这么多。金额随车型、地区、购车权益浮动，以官方 App / 配置页 / 购车合同为准。';
+  $hint.appendChild(p3);
+
+  /* 对比条：当前品牌按当前选择，其余品牌按各自默认方案 */
+  var rows = DATA.map(function (x) {
+    var isCur = x.id === state.brand;
+    var opt = isCur ? x.noa[state.noa] : x.noa[0];
+    var tt = totals(x, opt, [], state.years);
+    var mode = opt.mode === 'sub' ? '订阅' : (opt.mode === 'once' ? '买断' : '标配');
+    return { name: x.name, t: tt.total, mode: mode, cur: isCur };
+  }).sort(function (a, c) { return a.t - c.t; });
+  var max = rows.length ? rows[rows.length - 1].t : 1;
+  $bars.innerHTML = '<p class="hint" style="margin:0 0 8px">同口径对照（持有 ' + state.years
+    + ' 年的合计）：<strong>当前品牌按你上面的选择算</strong>，其余品牌按各自默认方案（ETC + 该品牌最常见的 NOA 获取方式、不含选装）；小鹏一栏按现在随车赠送计，2027 年二季度起转订阅、价格未公布。</p>';
+  rows.forEach(function (r) {
+    var row = document.createElement('div');
+    row.className = 'bar' + (r.cur ? ' is-current' : '');
+    var nm = document.createElement('span');
+    nm.className = 'nm';
+    nm.textContent = r.name + (r.cur ? '（当前）' : '');
+    var tr = document.createElement('span');
+    tr.className = 'track';
+    var fl = document.createElement('span');
+    fl.className = 'fill';
+    fl.style.width = (max ? Math.max(2, Math.round(r.t / max * 100)) : 0) + '%';
+    tr.appendChild(fl);
+    var am = document.createElement('span');
+    am.className = 'amt';
+    am.textContent = fmt(r.t);
+    var em = document.createElement('em');
+    em.textContent = r.mode;
+    am.appendChild(em);
+    row.appendChild(nm);
+    row.appendChild(tr);
+    row.appendChild(am);
+    $bars.appendChild(row);
+  });
+}
+
+$brand.addEventListener('change', function () {
+  state.brand = $brand.value;
+  state.noa = 0;
+  state.extras = {};
   renderNoa();
-  renderYears();
   renderExtras();
   render();
+});
+
+renderBrandOptions();
+renderNoa();
+renderYears();
+renderScenes();
+renderExtras();
+render();
 })();
 </script>
 
