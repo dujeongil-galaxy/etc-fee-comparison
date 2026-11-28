@@ -789,9 +789,15 @@ var $hint = document.getElementById('calc-hint');
 
 function fmt(n) {
   if (!n) return '0 元';
-  if (n >= 10000) {
-    var w = (n / 10000).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-    return w + ' 万元';
+  // 金额都是整数元。显示规则：
+  //   整千（如 26000、10000）→ 用「万元」，最多一位小数（2.6 万元 / 1 万元）；
+  //   其余（10050、36499）→ 一律用「元」，零头一个不丢。
+  // ⚠️ 不要用 (n/10000).toFixed(2) 再去尾零：浮点误差会把 10050 显示成
+  //    「1 万元」（少 50），账就跟真实金额对不上了。
+  if (n >= 10000 && n % 1000 === 0) {
+    var v = n / 10000;
+    var s = (v % 1 === 0) ? String(v) : v.toFixed(1);
+    return s + ' 万元';
   }
   return n.toLocaleString('zh-CN') + ' 元';
 }
@@ -874,14 +880,18 @@ function renderExtras() {
     $extras.appendChild(li0);
     return;
   }
-  b.extras.forEach(function (x) {
+  b.extras.forEach(function (x, i) {
     var li = document.createElement('li');
-    var id = 'ex_' + b.id + '_' + x.label.replace(/\W+/g, '');
+    // ⚠️ id 必须用**索引**生成，不能用 label 文本：label 里的中文会被 \W 全删掉
+    //    （'L7 后排娱乐屏（选装）' 与 'L7 车漆（选装）' 会算出同一个 id），
+    //    label 的 for 一旦指向重复 id，点第二项激活的仍是第一项——点谁勾谁全乱。
+    var id = 'ex_' + b.id + '_' + i;
     var lab = document.createElement('label');
     lab.setAttribute('for', id);
     var cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.id = id;
+    cb.setAttribute('data-label', x.label);
     cb.checked = !!state.extras[x.label];
     cb.addEventListener('change', function () {
       state.extras[x.label] = cb.checked;
@@ -894,6 +904,21 @@ function renderExtras() {
     lab.appendChild(span);
     li.appendChild(lab);
     $extras.appendChild(li);
+  });
+  // id 唯一性自检：同品牌内一旦出现重复 id，label 的 for 会指向别的项，
+  // 表现为「点车漆勾上后排娱乐屏」。这里直接在控制台报出来，别让它静默。
+  var ids49 = [].map.call($extras.querySelectorAll('input'), function (i) { return i.id; });
+  if (new Set(ids49).size !== ids49.length) {
+    console.error('[etc-fee] 付费项 id 重复，点选会串项：', ids49);
+  }
+  // 再查一遍「label 的 for 指向的 input 必须就在这个 label 内部」——
+  // 上一条查的是 id 是否重复，这条查的是配对关系，两类问题一起挡住。
+  [].map.call($extras.querySelectorAll('label'), function (lab) {
+    var f = lab.getAttribute('for');
+    var target = f ? document.getElementById(f) : null;
+    if (target && !lab.contains(target)) {
+      console.error('[etc-fee] label 的 for 指向了别的项：', lab.textContent, '→', f);
+    }
   });
 }
 
